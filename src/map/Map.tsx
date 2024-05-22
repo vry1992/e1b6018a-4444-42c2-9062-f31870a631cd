@@ -5,7 +5,6 @@ import { MapContainer, Marker, TileLayer } from 'react-leaflet';
 
 import 'leaflet-routing-machine';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
-import { useSearchParams } from 'react-router-dom';
 
 const maps = {
   base: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -30,19 +29,20 @@ const icon = new L.DivIcon({
 });
 
 export const Map = () => {
-  const [params] = useSearchParams();
+  const params = window.location.href.match(/p=(.*)/) || [];
+  const query = params[1] || '';
 
   const [points, setPoints] = useState<LatLng[]>([]);
 
   useEffect(() => {
-    const rawParams = params.get('p');
-    const first = rawParams?.split(';');
+    if (!query) return;
+    const first = query?.split(';');
     const pos = first?.map((item) => {
       const [x, y] = item.split(',');
       return L.latLng(+x, +y);
     }) as LatLng[];
     setPoints(pos);
-  }, [params]);
+  }, [query]);
 
   return (
     <>
